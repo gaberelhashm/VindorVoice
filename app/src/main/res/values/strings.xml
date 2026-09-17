@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Voice Rooms</string>
+    <string name="app_name">VidorVoice</string>
     <string name="home_title">غرف صوتية</string>
     <string name="rooms_tab">الغرف</string>
     <string name="chat_tab">الدردشة</string>
