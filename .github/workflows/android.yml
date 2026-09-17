@@ -3,8 +3,6 @@ name: Build Android APK
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -40,11 +38,11 @@ jobs:
           yes | sdkmanager --licenses > /dev/null || true
           sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace --no-daemon
+      - name: Fix gradlew and build
+        run: |
+          sed -i 's/\r$//' gradlew
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
