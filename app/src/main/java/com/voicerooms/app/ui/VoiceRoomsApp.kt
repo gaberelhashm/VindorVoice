@@ -81,8 +81,8 @@ fun VoiceRoomsApp() {
             ) {
                 val icons = listOf(
                     Icons.Filled.Home to Icons.Outlined.Home,
-                    Icons.Filled.Chat to Icons.Outlined.Chat,
-                    Icons.Filled.SportsEsports to Icons.Outlined.SportsEsports,
+                    Icons.Filled.Email to Icons.Outlined.Email,
+                    Icons.Filled.PlayArrow to Icons.Outlined.PlayArrow,
                     Icons.Filled.Person to Icons.Outlined.Person
                 )
                 tabs.forEachIndexed { index, title ->
@@ -264,7 +264,7 @@ fun RoomCard(room: VoiceRoom) {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        Icons.Default.RecordVoiceOver,
+                        Icons.Default.Mic,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
                         tint = MaterialTheme.colorScheme.primary
@@ -278,7 +278,7 @@ fun RoomCard(room: VoiceRoom) {
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        Icons.Default.Headset,
+                        Icons.Default.Person,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
@@ -409,11 +409,11 @@ fun ChatBubble(message: ChatMessage) {
 fun GamesScreen() {
     val games = listOf(
         "لعبة الكلمات" to Icons.Default.Edit,
-        "تخمين الأغنية" to Icons.Default.MusicNote,
-        "أسئلة عامة" to Icons.Default.HelpOutline,
-        "رسم وتخمين" to Icons.Default.Brush,
-        "السرعة" to Icons.Default.Speed,
-        "حرب الأرقام" to Icons.Default.Tag
+        "تخمين الأغنية" to Icons.Default.Star,
+        "أسئلة عامة" to Icons.Default.Info,
+        "رسم وتخمين" to Icons.Default.Edit,
+        "السرعة" to Icons.Default.PlayArrow,
+        "حرب الأرقام" to Icons.Default.Star
     )
 
     Column(
@@ -468,7 +468,7 @@ fun GamesScreen() {
                         )
                         Spacer(modifier = Modifier.weight(1f))
                         Icon(
-                            Icons.Default.ChevronLeft,
+                            Icons.Default.Info,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
