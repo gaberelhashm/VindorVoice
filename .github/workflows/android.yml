@@ -38,8 +38,10 @@ jobs:
           yes | sdkmanager --licenses > /dev/null || true
           sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
 
-      - name: Fix gradlew and build
+      - name: Fix wrapper and build
         run: |
+          curl -sL -o gradle/wrapper/gradle-wrapper.jar \
+            https://github.com/android/nowinandroid/raw/main/gradle/wrapper/gradle-wrapper.jar
           sed -i 's/\r$//' gradlew
           chmod +x gradlew
           ./gradlew assembleDebug --stacktrace --no-daemon
