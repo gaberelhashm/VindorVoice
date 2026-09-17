@@ -82,7 +82,7 @@ fun VoiceRoomsApp() {
                 val icons = listOf(
                     Icons.Filled.Home to Icons.Outlined.Home,
                     Icons.Filled.Email to Icons.Outlined.Email,
-                    Icons.Filled.PlayArrow to Icons.Outlined.PlayArrow,
+                    Icons.Filled.Star to Icons.Outlined.Star,
                     Icons.Filled.Person to Icons.Outlined.Person
                 )
                 tabs.forEachIndexed { index, title ->
@@ -533,7 +533,7 @@ fun ProfileScreen() {
 
         ProfileMenuItem(Icons.Default.Settings, "الإعدادات")
         ProfileMenuItem(Icons.Default.Star, "VIP")
-        ProfileMenuItem(Icons.Default.Help, "المساعدة")
+        ProfileMenuItem(Icons.Default.Info, "المساعدة")
         ProfileMenuItem(Icons.Default.Info, "حول التطبيق")
     }
 }
