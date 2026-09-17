@@ -6,35 +6,36 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val PurplePrimary = Color(0xFF7B2CBF)
-private val PurpleDark = Color(0xFF5A189A)
-private val PurpleLight = Color(0xFF9D4EDD)
-private val PurpleAccent = Color(0xFFC77DFF)
-private val BackgroundDark = Color(0xFF10002B)
-private val SurfaceDark = Color(0xFF240046)
-private val TextPrimary = Color(0xFFFFFFFF)
-private val TextSecondary = Color(0xFFE0AAFF)
+private val VidorPurple = Color(0xFF7C3AED)
+private val VidorDeepPurple = Color(0xFF3B0B72)
+private val VidorDark = Color(0xFF15081F)
+private val VidorSurface = Color(0xFF22112D)
+private val VidorSoftSurface = Color(0xFF2C163C)
+private val VidorGlow = Color(0xFFE8D8FF)
+private val VidorText = Color(0xFFF5EEFF)
+private val VidorMuted = Color(0xFFE6D0FF)
 
 private val DarkColorScheme = darkColorScheme(
-    primary = PurplePrimary,
-    onPrimary = TextPrimary,
-    primaryContainer = PurpleDark,
-    onPrimaryContainer = TextPrimary,
-    secondary = PurpleLight,
-    onSecondary = TextPrimary,
-    tertiary = PurpleAccent,
-    onTertiary = BackgroundDark,
-    background = BackgroundDark,
-    onBackground = TextPrimary,
-    surface = SurfaceDark,
-    onSurface = TextPrimary,
-    surfaceVariant = Color(0xFF3C096C),
-    onSurfaceVariant = TextSecondary
+    primary = VidorPurple,
+    onPrimary = VidorText,
+    primaryContainer = VidorDeepPurple,
+    onPrimaryContainer = VidorText,
+    secondary = Color(0xFFA78BFA),
+    onSecondary = VidorText,
+    tertiary = VidorGlow,
+    onTertiary = VidorDark,
+    background = VidorDark,
+    onBackground = VidorText,
+    surface = VidorSurface,
+    onSurface = VidorText,
+    surfaceVariant = VidorSoftSurface,
+    onSurfaceVariant = VidorMuted,
+    outline = Color(0xFF8B5CF6)
 )
 
 @Composable
 fun VoiceRoomsTheme(
-    darkTheme: Boolean = true, // Always dark purple theme
+    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
     MaterialTheme(
