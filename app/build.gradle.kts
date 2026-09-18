@@ -12,8 +12,8 @@ android {
         applicationId = "com.voicerooms.app"
         minSdk = 23
         targetSdk = 35
-        versionCode = 18
-        versionName = "1.0.18"
+        versionCode = 26
+        versionName = "1.0.26"
     }
 
     buildTypes {
@@ -40,12 +40,13 @@ android {
     }
 
     packaging {
-        resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
     }
 }
 
 dependencies {
     val composeBom = platform("androidx.compose:compose-bom:2024.10.01")
+
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
@@ -58,7 +59,6 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
-
     implementation("androidx.navigation:navigation-compose:2.8.3")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
