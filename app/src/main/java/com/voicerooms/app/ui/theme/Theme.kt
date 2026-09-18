@@ -8,12 +8,13 @@ import androidx.compose.ui.graphics.Color
 
 private val VidorPurple = Color(0xFF7C3AED)
 private val VidorDeepPurple = Color(0xFF3B0B72)
-private val VidorDark = Color(0xFF15081F)
-private val VidorSurface = Color(0xFF22112D)
+private val VidorDark = Color(0xFF12091F)
+private val VidorSurface = Color(0xFF20132D)
 private val VidorSoftSurface = Color(0xFF2C163C)
 private val VidorGlow = Color(0xFFE8D8FF)
 private val VidorText = Color(0xFFF5EEFF)
 private val VidorMuted = Color(0xFFE6D0FF)
+private val VidorStar = Color(0xFFFFD76A)
 
 private val DarkColorScheme = darkColorScheme(
     primary = VidorPurple,
@@ -30,7 +31,8 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = VidorText,
     surfaceVariant = VidorSoftSurface,
     onSurfaceVariant = VidorMuted,
-    outline = Color(0xFF8B5CF6)
+    outline = Color(0xFF8B5CF6),
+    tertiaryContainer = VidorStar.copy(alpha = 0.18f)
 )
 
 @Composable
