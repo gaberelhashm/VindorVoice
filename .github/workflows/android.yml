@@ -29,9 +29,7 @@ jobs:
         shell: bash
         run: |
           set -e
-
           SDK="$HOME/android-sdk"
-
           mkdir -p "$SDK/cmdline-tools"
 
           curl -fL \
@@ -74,9 +72,7 @@ jobs:
         shell: bash
         run: |
           set -e
-
           chmod +x ./gradlew
-
           ./gradlew clean assembleRelease \
             --no-daemon \
             --stacktrace
@@ -87,9 +83,14 @@ jobs:
           set -e
 
           KEYSTORE="$RUNNER_TEMP/vindorvoice.keystore"
-          UNSIGNED="app/build/outputs/apk/release/app-release-unsigned.apk"
+          UNSIGNED="$(find . -type f -path '*/build/outputs/apk/release/*-unsigned.apk' | head -n 1)"
           ALIGNED="$RUNNER_TEMP/VindorVoice-aligned.apk"
-          FINAL="VindorVoice.apk"
+          FINAL="$GITHUB_WORKSPACE/VindorVoice.apk"
+
+          echo "Unsigned APK: $UNSIGNED"
+
+          test -n "$UNSIGNED"
+          test -s "$UNSIGNED"
 
           keytool -genkeypair \
             -v \
@@ -101,8 +102,6 @@ jobs:
             -storepass android \
             -keypass android \
             -dname "CN=VindorVoice, OU=Mobile, O=VindorVoice, L=Cairo, S=Cairo, C=EG"
-
-          test -s "$UNSIGNED"
 
           "$ANDROID_HOME/build-tools/35.0.0/zipalign" \
             -f 4 \
@@ -123,7 +122,7 @@ jobs:
             --verbose \
             "$FINAL"
 
-          file "$FINAL"
+          ls -lh "$FINAL"
 
       - name: Upload final APK
         uses: actions/upload-artifact@v4
