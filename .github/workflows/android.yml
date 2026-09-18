@@ -1,3 +1,4 @@
+
 name: Build Android APK
 
 on:
@@ -19,7 +20,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: gradle
 
       - name: Setup Android SDK manually
         run: |
@@ -50,15 +50,25 @@ jobs:
             "platforms;android-35" \
             "build-tools;35.0.0"
 
+      - name: Setup Gradle 8.9
+        run: |
+          set -e
+          curl -fsSL -o "$RUNNER_TEMP/gradle.zip" \
+            https://services.gradle.org/distributions/gradle-8.9-bin.zip
+          unzip -q "$RUNNER_TEMP/gradle.zip" -d "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/gradle-8.9/bin" >> "$GITHUB_PATH"
+
       - name: Build debug APK
         run: |
-          sed -i 's/\r$//' gradlew
-          chmod +x gradlew
-          ./gradlew clean assembleDebug --stacktrace --no-daemon --refresh-dependencies
+          set -e
+          gradle clean assembleDebug --stacktrace --no-daemon --refresh-dependencies
+          test -s app/build/outputs/apk/debug/app-debug.apk
+          file app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
           path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
           retention-days: 30
