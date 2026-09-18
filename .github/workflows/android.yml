@@ -12,11 +12,11 @@ permissions:
 
 jobs:
   build:
-    name: Build signed APK
+    name: Build and verify installable APK
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout source
         uses: actions/checkout@v4
 
       - name: Set up Java 17
@@ -25,37 +25,14 @@ jobs:
           java-version: "17"
           distribution: "temurin"
 
-      - name: Install Android SDK
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
         shell: bash
         run: |
-          set -e
-          SDK="$HOME/android-sdk"
-          mkdir -p "$SDK/cmdline-tools"
-
-          curl -fL \
-            -o "$RUNNER_TEMP/cmdline-tools.zip" \
-            "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
-
-          unzip -q "$RUNNER_TEMP/cmdline-tools.zip" -d "$SDK/cmdline-tools"
-          mv "$SDK/cmdline-tools/cmdline-tools" "$SDK/cmdline-tools/latest"
-
-          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
-          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
-          echo "$SDK/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
-          echo "$SDK/platform-tools" >> "$GITHUB_PATH"
-
-      - name: Accept Android licenses
-        shell: bash
-        run: |
-          yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --licenses >/dev/null 2>&1 || true
-
-      - name: Install required SDK packages
-        shell: bash
-        run: |
-          sdkmanager --sdk_root="$ANDROID_SDK_ROOT" \
-            "platform-tools" \
-            "platforms;android-35" \
-            "build-tools;35.0.0"
+          set -euo pipefail
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -65,25 +42,42 @@ jobs:
       - name: Build release APK
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
           chmod +x ./gradlew
           ./gradlew clean assembleRelease --no-daemon --stacktrace
 
-      - name: Sign APK
+      - name: Locate unsigned APK
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
 
+          APK="$(find app/build/outputs/apk/release \
+            -maxdepth 1 \
+            -type f \
+            -name "*unsigned.apk" \
+            -print -quit)"
+
+          if [ -z "$APK" ]; then
+            echo "Unsigned APK was not found."
+            find app/build/outputs -type f -name "*.apk" -print || true
+            exit 1
+          fi
+
+          echo "UNSIGNED_APK=$APK" >> "$GITHUB_ENV"
+          echo "Found APK: $APK"
+
+      - name: Align and sign APK
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BUILD_TOOLS="$ANDROID_HOME/build-tools/35.0.0"
           KEYSTORE="$RUNNER_TEMP/vindorvoice.keystore"
-          UNSIGNED="$(find . -type f -path '*/build/outputs/apk/release/*-unsigned.apk' | head -n 1)"
           ALIGNED="$RUNNER_TEMP/VindorVoice-aligned.apk"
           FINAL="$GITHUB_WORKSPACE/VindorVoice.apk"
 
-          test -n "$UNSIGNED"
-          test -s "$UNSIGNED"
-
           keytool -genkeypair \
-            -v \
+            -noprompt \
             -keystore "$KEYSTORE" \
             -alias vindorvoice \
             -keyalg RSA \
@@ -93,25 +87,61 @@ jobs:
             -keypass android \
             -dname "CN=VindorVoice, OU=Mobile, O=VindorVoice, L=Cairo, S=Cairo, C=EG"
 
-          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -f 4 "$UNSIGNED" "$ALIGNED"
+          "$BUILD_TOOLS/zipalign" \
+            -f \
+            -p \
+            4 \
+            "$UNSIGNED_APK" \
+            "$ALIGNED"
 
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" sign \
+          "$BUILD_TOOLS/apksigner" sign \
             --ks "$KEYSTORE" \
             --ks-key-alias vindorvoice \
             --ks-pass pass:android \
             --key-pass pass:android \
+            --v1-signing-enabled true \
+            --v2-signing-enabled true \
+            --v3-signing-enabled true \
             --out "$FINAL" \
             "$ALIGNED"
 
           test -s "$FINAL"
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$FINAL"
 
-      - name: Publish direct APK release
+      - name: Verify APK
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BUILD_TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+
+          unzip -tq VindorVoice.apk
+
+          "$BUILD_TOOLS/apksigner" verify \
+            --verbose \
+            --min-sdk-version 23 \
+            VindorVoice.apk
+
+          "$BUILD_TOOLS/aapt" dump badging VindorVoice.apk \
+            | tee "$RUNNER_TEMP/apk-badging.txt"
+
+          grep -q "package: name='com.voicerooms.app'" \
+            "$RUNNER_TEMP/apk-badging.txt"
+
+          sha256sum VindorVoice.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VindorVoice-verified-${{ github.run_number }}
+          path: VindorVoice.apk
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: "vindorvoice-${{ github.run_number }}"
-          name: "VindorVoice ${{ github.run_number }}"
-          files: "VindorVoice.apk"
+          name: "VindorVoice ${{ github.run_number }} - Verified APK"
+          files: VindorVoice.apk
           draft: false
           prerelease: false
           generate_release_notes: false
