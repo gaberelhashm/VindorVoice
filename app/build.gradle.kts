@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.voicerooms.app"
-        minSdk = 24
+        minSdk = 23
         targetSdk = 35
         versionCode = 18
         versionName = "1.0.18"
