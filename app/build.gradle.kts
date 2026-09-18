@@ -8,14 +8,12 @@ android {
     namespace = "com.voicerooms.app"
     compileSdk = 35
 
-defaultConfig {
-    applicationId = "com.voicerooms.app"
-    minSdk = 24
-    targetSdk = 35
-    versionCode = 18
-    versionName = "1.0.18"
-}
-
+    defaultConfig {
+        applicationId = "com.voicerooms.app"
+        minSdk = 24
+        targetSdk = 35
+        versionCode = 18
+        versionName = "1.0.18"
     }
 
     buildTypes {
@@ -42,9 +40,7 @@ defaultConfig {
     }
 
     packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
+        resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
     }
 }
 
